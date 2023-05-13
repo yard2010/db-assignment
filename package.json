@@ -1,0 +1,10 @@
+{
+  "name": "db-assignment",
+  "packageManager": "yarn@3.5.1",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  }
+}
