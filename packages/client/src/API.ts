@@ -18,3 +18,8 @@ export const search = async (query: string, page: number) => {
   });
   return response.data;
 };
+
+export const fetchRecentQueries = async () => {
+  const response = await axios.post(`${API_URL}/recent-queries`);
+  return response.data;
+};

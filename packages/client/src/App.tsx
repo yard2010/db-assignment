@@ -1,13 +1,16 @@
 import { SearchPage } from "./SearchPage";
-import { Provider } from "react-redux";
-import { store } from "./redux/store";
+
+import { useEffect } from "react";
+import { useAppDispatch } from "./redux/hooks";
+import { fetchRecentQueriesThunk } from "./redux/searchSlice";
 
 function App() {
-  return (
-    <Provider store={store}>
-      <SearchPage />
-    </Provider>
-  );
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(fetchRecentQueriesThunk());
+  }, []);
+
+  return <SearchPage />;
 }
 
 export default App;

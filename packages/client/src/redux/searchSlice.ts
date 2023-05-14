@@ -4,7 +4,7 @@ import {
   PayloadAction,
   ThunkAction,
 } from "@reduxjs/toolkit";
-import { search, SearchResponse } from "../API";
+import { fetchRecentQueries, search, SearchResponse } from "../API";
 import { RootState } from "./store";
 
 type SearchState = SearchResponse & {
@@ -34,20 +34,17 @@ const searchSlice = createSlice({
 
       const currentQuery = action.payload.currentQuery;
       state.currentQuery = currentQuery;
-      if (
-        !state.recentQueries.find((recentQuery) => recentQuery === currentQuery)
-      ) {
-        state.recentQueries = [
-          currentQuery,
-          ...state.recentQueries.slice(0, 9),
-        ];
-      }
+
+      state.recentQueries = [currentQuery, ...state.recentQueries.slice(0, 9)];
     },
     resetResults: (state) => {
       return { ...initialState, recentQueries: state.recentQueries };
     },
     changePage: (state, action: PayloadAction<number>) => {
       state.currentPage = action.payload;
+    },
+    setRecentQueries: (state, action: PayloadAction<string[]>) => {
+      state.recentQueries = action.payload;
     },
   },
 });
@@ -72,6 +69,13 @@ export const changePageThunk =
     dispatch(setResults({ ...response, currentQuery }));
   };
 
-export const { setResults, changePage, resetResults } = searchSlice.actions;
+export const fetchRecentQueriesThunk =
+  (): ThunkAction<void, {}, unknown, AnyAction> => async (dispatch) => {
+    const recentQueries = await fetchRecentQueries();
+    dispatch(setRecentQueries(recentQueries));
+  };
+
+export const { setResults, changePage, resetResults, setRecentQueries } =
+  searchSlice.actions;
 
 export default searchSlice.reducer;
