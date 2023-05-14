@@ -6,7 +6,7 @@ export type SearchResult = {
   url: string;
 };
 
-type SearchResponse = {
+export type SearchResponse = {
   results: SearchResult[];
   currentPage: number;
   pagesCount: number;

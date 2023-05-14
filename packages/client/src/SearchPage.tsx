@@ -1,7 +1,13 @@
 import styled from "@emotion/styled";
 import { ChangeEvent, useState } from "react";
 import { Pagination } from "./Pagination";
-import { SearchResult, search } from "./API";
+import { search } from "./API";
+import { useAppDispatch, useAppSelector } from "./redux/hooks";
+import {
+  resetResults,
+  setResults,
+  changePage as changePageAction,
+} from "./redux/searchSlice";
 
 const Container = styled.div({
   display: "flex",
@@ -42,29 +48,29 @@ const PaginationContainer = styled.div({
 
 export const SearchPage = () => {
   const [searchValue, setSearchValue] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pagesCount, setPagesCount] = useState<number | undefined>();
+
+  const { currentPage, pagesCount, results } = useAppSelector(
+    ({ search }) => search
+  );
+  const dispatch = useAppDispatch();
 
   const handleSearch = async () => {
     fetchResults(searchValue, currentPage);
   };
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setResults([]);
+    dispatch(resetResults());
     setSearchValue(event.target.value);
   };
 
   // TODO: move to action
   const fetchResults = async (query: string, page: number) => {
     const response = await search(query, page);
-    setResults(response.results);
-    setCurrentPage(response.currentPage);
-    setPagesCount(response.pagesCount);
+    dispatch(setResults(response));
   };
 
   const changePage = (page: number) => {
-    setCurrentPage(page);
+    dispatch(changePageAction(page));
     fetchResults(searchValue, page);
   };
 
