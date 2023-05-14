@@ -5,6 +5,10 @@
     "packages/*"
   ],
   "devDependencies": {
+    "concurrently": "^8.0.1",
     "typescript": "^5.0.4"
+  },
+  "scripts": {
+    "start": "concurrently \"cd packages/server && yarn start\" \"cd packages/client && yarn dev\""
   }
 }
