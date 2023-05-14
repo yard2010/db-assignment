@@ -1,12 +1,11 @@
 import styled from "@emotion/styled";
 import { ChangeEvent, useState } from "react";
 import { Pagination } from "./Pagination";
-import { search } from "./API";
 import { useAppDispatch, useAppSelector } from "./redux/hooks";
 import {
   resetResults,
-  setResults,
-  changePage as changePageAction,
+  fetchResultsThunk,
+  changePageThunk,
 } from "./redux/searchSlice";
 
 const Container = styled.div({
@@ -54,24 +53,17 @@ export const SearchPage = () => {
   );
   const dispatch = useAppDispatch();
 
-  const handleSearch = async () => {
-    fetchResults(searchValue, currentPage);
+  const handleSearch = () => {
+    dispatch(fetchResultsThunk(searchValue));
+  };
+
+  const handlePageChange = (page: number) => {
+    dispatch(changePageThunk(page));
   };
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     dispatch(resetResults());
     setSearchValue(event.target.value);
-  };
-
-  // TODO: move to action
-  const fetchResults = async (query: string, page: number) => {
-    const response = await search(query, page);
-    dispatch(setResults(response));
-  };
-
-  const changePage = (page: number) => {
-    dispatch(changePageAction(page));
-    fetchResults(searchValue, page);
   };
 
   return (
@@ -95,7 +87,7 @@ export const SearchPage = () => {
       {results.length > 0 && (
         <PaginationContainer>
           <Pagination
-            setCurrentPage={changePage}
+            setCurrentPage={handlePageChange}
             currentPage={currentPage}
             pagesCount={pagesCount || 0}
           />
