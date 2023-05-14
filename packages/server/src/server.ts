@@ -1,10 +1,12 @@
 import express from "express";
 import axios from "axios";
 import cors from "cors";
+import fs from "fs";
 
 const DUCKDUCKGO_ENDPOINT = "http://api.duckduckgo.com";
 const PORT = 8000;
 const RESULTS_PER_PAGE = 10;
+const RECENT_QUERIES_FILENAME = "./recent-queries.txt";
 
 const app = express();
 
@@ -57,7 +59,24 @@ app.get("/results", async (req, res) => {
     }
   );
 
+  fs.appendFileSync(RECENT_QUERIES_FILENAME, query + "\n");
+
   res.send(paginateResults(results, RESULTS_PER_PAGE, currentPage));
+});
+
+app.post("/recent-queries", async (req, res) => {
+  try {
+    const recentQueries = fs.readFileSync(RECENT_QUERIES_FILENAME, "utf8");
+    res.send(
+      recentQueries
+        .split("\n")
+        .filter((query) => query)
+        .reverse()
+        .slice(0, 10)
+    );
+  } catch (e) {
+    res.send([]);
+  }
 });
 
 app.listen(PORT, () => {
