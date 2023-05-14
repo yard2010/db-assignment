@@ -1,0 +1,19 @@
+body {
+  background-color: #373737;
+  font-family: "Arial";
+  color: #fafafa;
+}
+
+a {
+  color: #fafafa;
+  opacity: 0.5;
+}
+
+a:hover {
+  opacity: 1;
+}
+
+.wrapper {
+  width: 800px;
+  margin: 0 auto;
+}
