@@ -1,11 +1,14 @@
 import express from "express";
 import axios from "axios";
+import cors from "cors";
 
 const DUCKDUCKGO_ENDPOINT = "http://api.duckduckgo.com";
 const PORT = 8000;
 const RESULTS_PER_PAGE = 10;
 
 const app = express();
+
+app.use(cors());
 
 type SearchResult = { url: string; title: string };
 
