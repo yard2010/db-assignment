@@ -81,7 +81,9 @@ export const SearchPage = () => {
       </Control>
       <Results>
         {results.map((result) => (
-          <Result href={result.url}>{result.title}</Result>
+          <Result key={result.url} href={result.url}>
+            {result.title}
+          </Result>
         ))}
       </Results>
       {results.length > 0 && (

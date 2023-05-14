@@ -27,6 +27,7 @@ export const Pagination = ({
     <Container>
       {[...Array(pagesCount).keys()].map((index) => (
         <PageAnchor
+          key={`page${index}`}
           onClick={() => setCurrentPage(index + 1)}
           $isSelected={currentPage - 1 === index}
           href="#"
