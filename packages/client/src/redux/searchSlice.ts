@@ -9,6 +9,7 @@ import { RootState } from "./store";
 
 type SearchState = SearchResponse & {
   currentQuery: string | null;
+  recentQueries: string[];
 };
 
 const initialState: SearchState = {
@@ -16,6 +17,7 @@ const initialState: SearchState = {
   currentPage: 1,
   results: [],
   currentQuery: null,
+  recentQueries: [],
 };
 
 const searchSlice = createSlice({
@@ -29,10 +31,20 @@ const searchSlice = createSlice({
       state.results = action.payload.results;
       state.currentPage = action.payload.currentPage;
       state.pagesCount = action.payload.pagesCount;
-      state.currentQuery = action.payload.currentQuery;
+
+      const currentQuery = action.payload.currentQuery;
+      state.currentQuery = currentQuery;
+      if (
+        !state.recentQueries.find((recentQuery) => recentQuery === currentQuery)
+      ) {
+        state.recentQueries = [
+          currentQuery,
+          ...state.recentQueries.slice(0, 9),
+        ];
+      }
     },
     resetResults: (state) => {
-      state = initialState;
+      return { ...initialState, recentQueries: state.recentQueries };
     },
     changePage: (state, action: PayloadAction<number>) => {
       state.currentPage = action.payload;

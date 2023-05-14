@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Pagination } from "./Pagination";
 import { useAppDispatch, useAppSelector } from "./redux/hooks";
 import {
@@ -45,12 +45,39 @@ const PaginationContainer = styled.div({
   justifyContent: "center",
 });
 
+const ColumnsContainer = styled.div({
+  display: "flex",
+});
+
+const RecentQueries = styled.div({
+  display: "flex",
+  flexDirection: "column",
+  width: "20%",
+  flexShrink: 0,
+  gap: "0.5rem",
+  "& h1": {
+    fontWeight: "bold",
+    paddingBottom: "1rem",
+  },
+});
+
+const Content = styled.div({
+  flexGrow: 1,
+});
+
 export const SearchPage = () => {
   const [searchValue, setSearchValue] = useState("");
 
-  const { currentPage, pagesCount, results } = useAppSelector(
+  const { currentPage, pagesCount, results, currentQuery } = useAppSelector(
     ({ search }) => search
   );
+
+  useEffect(() => {
+    currentQuery && setSearchValue(currentQuery);
+  }, [currentQuery]);
+
+  const recentQueries = useAppSelector((state) => state.search.recentQueries);
+
   const dispatch = useAppDispatch();
 
   const handleSearch = () => {
@@ -66,33 +93,49 @@ export const SearchPage = () => {
     setSearchValue(event.target.value);
   };
 
+  const handleRecentQueryClick = (recentQuery: string) => {
+    dispatch(fetchResultsThunk(recentQuery));
+  };
+
   return (
     <Container>
       <Title>Search</Title>
-      <Control>
-        <input
-          value={searchValue}
-          onChange={handleSearchChange}
-          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-        />
-        <button onClick={handleSearch}>Search</button>
-      </Control>
-      <Results>
-        {results.map((result) => (
-          <Result key={result.url} href={result.url}>
-            {result.title}
-          </Result>
-        ))}
-      </Results>
-      {results.length > 0 && (
-        <PaginationContainer>
-          <Pagination
-            setCurrentPage={handlePageChange}
-            currentPage={currentPage}
-            pagesCount={pagesCount || 0}
-          />
-        </PaginationContainer>
-      )}
+      <ColumnsContainer>
+        <RecentQueries>
+          <h1>Recent Queries</h1>
+          {recentQueries.map((recentQuery) => (
+            <a href="#" onClick={() => handleRecentQueryClick(recentQuery)}>
+              {recentQuery}
+            </a>
+          ))}
+        </RecentQueries>
+        <Content>
+          <Control>
+            <input
+              value={searchValue}
+              onChange={handleSearchChange}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            />
+            <button onClick={handleSearch}>Search</button>
+          </Control>
+          <Results>
+            {results.map((result) => (
+              <Result key={result.url} href={result.url}>
+                {result.title}
+              </Result>
+            ))}
+          </Results>
+          {results.length > 0 && (
+            <PaginationContainer>
+              <Pagination
+                setCurrentPage={handlePageChange}
+                currentPage={currentPage}
+                pagesCount={pagesCount || 0}
+              />
+            </PaginationContainer>
+          )}
+        </Content>
+      </ColumnsContainer>
     </Container>
   );
 };
