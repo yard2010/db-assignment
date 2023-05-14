@@ -55,6 +55,7 @@ const searchSlice = createSlice({
 export const fetchResultsThunk =
   (query: string): ThunkAction<void, RootState, unknown, AnyAction> =>
   async (dispatch, getState) => {
+    dispatch(resetResults());
     const response = await search(query, getState().search.currentPage);
     dispatch(setResults({ ...response, currentQuery: query }));
   };
